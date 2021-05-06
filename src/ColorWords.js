@@ -57,6 +57,21 @@ export const ColorWords = () => {
             tmp[row][col].color = "red"
         }
         setState(tmp)
+        checkFinish()
+    }
+
+    const checkFinish = () => {
+        for (let row = 0; row < state.length; row++) {
+            for (let col = 0; col < state[row].length; col++) {
+                if (!state[row][col].color) {
+                    return
+                }
+                
+            }
+            
+        }
+        setRunning(false)
+        calculateResult(state, setResults)
     }
 
     useEffect(() => {
@@ -76,6 +91,8 @@ export const ColorWords = () => {
         if (!running) {
             setState(getWords())
             setResults([])
+        } else {
+            calculateResult(state, setResults)
         }
         setRunning(!running)
     }
