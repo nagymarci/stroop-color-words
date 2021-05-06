@@ -12,6 +12,34 @@ function getWords() {
     })
 }
 
+function calculateResult(state, setResults) {
+    let clicked = 0
+    let red = 0
+    let tmp = [...state]
+    tmp.forEach((row) => {
+        row.forEach((wordState) => {
+            if (wordState.color) {
+                clicked++
+            }
+            if (wordState.color === "red") {
+                red++
+            }
+        })
+    })
+    setResults((results) => {
+        console.log("results", results)
+        let newResults = [...results]
+        let oldProcessed = 0
+        let oldFaults = 0
+        newResults.forEach((result) => {
+            oldProcessed += result.processed
+            oldFaults += result.faults
+        })
+        newResults.push({processed: clicked - oldProcessed, faults: red - oldFaults})
+        return newResults
+    })
+}
+
 export const ColorWords = () => {
     const [state, setState] = useState(getWords())
     const [running, setRunning] = useState(false)
@@ -34,29 +62,7 @@ export const ColorWords = () => {
     useEffect(() => {
         if (running && !intervalId.current) {
             intervalId.current = setInterval(()=> {
-                //console.log("results", results)
-                let clicked = 0
-                let red = 0
-                let tmp = [...state]
-                tmp.forEach((row) => {
-                    row.forEach((wordState) => {
-                        if (wordState.color) {
-                            clicked++
-                        }
-                        if (wordState.color === "red") {
-                            red++
-                        }
-                    })
-                })
-                //let newResults = [...results]
-                //newResults.push({processed: clicked, faults: red})
-                //console.log("newResults", newResults)
-                setResults((results) => {
-                    console.log("results", results)
-                    let newResults = [...results]
-                    newResults.push({processed: clicked, faults: red})
-                    return newResults
-                })
+                calculateResult(state, setResults)
             }, 5000)
         }
         if (!running && intervalId.current) {
@@ -67,7 +73,7 @@ export const ColorWords = () => {
     }, [running, state])
 
     const handleTimer = () => {
-        if (running) {
+        if (!running) {
             setState(getWords())
             setResults([])
         }
@@ -77,7 +83,7 @@ export const ColorWords = () => {
     console.log(state)
     return (
         <Container className="colorWords">
-            <Button onClick={handleTimer}>{running ? "New" : "Start"}</Button>
+            <Button onClick={handleTimer}>{running ? "Stop" : "Start new"}</Button>
             <Row className="mt-5">
                 <Table bordered>
                     <tbody>
@@ -98,6 +104,7 @@ export const ColorWords = () => {
                     </tbody>
                 </Table>
             </Row>
+            {!running &&
             <Row>
                 <Table bordered className="resultTable">
                     <tbody>
@@ -125,6 +132,7 @@ export const ColorWords = () => {
                     </tbody>
                 </Table>
             </Row>
+            }
         </Container>
     )
 }
