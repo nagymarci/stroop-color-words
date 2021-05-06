@@ -1,10 +1,22 @@
 [
-    [
-      "piros",
-      "zold"
-    ],
-    [
-      "kek",
-      "sarga"
-    ]
+    [ "ZÖLD", "PIROS", "ZÖLD", "PIROS", "ZÖLD" ],
+    [ "PIROS", "ZÖLD", "KÉK", "KÉK", "KÉK" ],
+    [ "KÉK", "PIROS", "ZÖLD", "PIROS", "ZÖLD" ],
+    [ "PIROS", "KÉK", "KÉK", "ZÖLD", "PIROS" ],
+    [ "ZÖLD", "ZÖLD", "PIROS", "KÉK", "KÉK" ],
+    [ "KÉK", "PIROS", "ZÖLD", "PIROS", "PIROS" ],
+    [ "ZÖLD", "KÉK", "KÉK", "ZÖLD", "ZÖLD" ],
+    [ "KÉK", "ZÖLD", "PIROS", "KÉK", "KÉK" ],
+    [ "PIROS", "KÉK", "ZÖLD", "PIROS", "PIROS" ],
+    [ "KÉK", "ZÖLD", "PIROS", "ZÖLD", "ZÖLD" ],
+    [ "PIROS", "PIROS", "ZÖLD", "PIROS", "PIROS" ],
+    [ "ZÖLD", "KÉK", "KÉK", "KÉK", "ZÖLD" ],
+    [ "KÉK", "ZÖLD", "PIROS", "ZÖLD", "PIROS" ],
+    [ "PIROS", "KÉK", "ZÖLD", "KÉK", "KÉK" ],
+    [ "KÉK", "ZÖLD", "PIROS", "PIROS", "ZÖLD" ],
+    [ "ZÖLD", "PIROS", "ZÖLD", "KÉK", "PIROS" ],
+    [ "PIROS", "ZÖLD", "PIROS", "PIROS", "KÉK" ],
+    [ "KÉK", "KÉK", "KÉK", "ZÖLD", "ZÖLD" ],
+    [ "PIROS", "PIROS", "ZÖLD", "KÉK", "KÉK" ],
+    [ "KÉK", "ZÖLD", "PIROS", "PIROS", "ZÖLD" ]
   ]

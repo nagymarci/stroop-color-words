@@ -60,7 +60,6 @@ export const ColorWords = () => {
             
         }
         setRunning(false)
-        //calculateResult(state, setResults)
     }
 
     useEffect(() => {
@@ -71,7 +70,6 @@ export const ColorWords = () => {
                     newResults.push({processed: 0, faults: 0})
                     return newResults
                 })
-                //calculateResult(state, setResults)
             }, 5000)
         }
         if (!running && intervalId.current) {
@@ -85,8 +83,6 @@ export const ColorWords = () => {
         if (!running) {
             setState(getWords())
             setResults([{processed: 0, faults: 0}])
-        } else {
-            //calculateResult(state, setResults)
         }
         setRunning(!running)
     }
