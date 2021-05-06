@@ -34,7 +34,7 @@ export const ColorWords = () => {
     useEffect(() => {
         if (running && !intervalId.current) {
             intervalId.current = setInterval(()=> {
-                console.log("results", results)
+                //console.log("results", results)
                 let clicked = 0
                 let red = 0
                 let tmp = [...state]
@@ -48,16 +48,23 @@ export const ColorWords = () => {
                         }
                     })
                 })
-                let newResults = [...results]
-                newResults.push({processed: clicked, faults: red})
-                setResults(newResults)
+                //let newResults = [...results]
+                //newResults.push({processed: clicked, faults: red})
+                //console.log("newResults", newResults)
+                setResults((results) => {
+                    console.log("results", results)
+                    let newResults = [...results]
+                    newResults.push({processed: clicked, faults: red})
+                    return newResults
+                })
             }, 5000)
         }
         if (!running && intervalId.current) {
+            console.log("clear interval runnig")
             clearInterval(intervalId.current)
             intervalId.current = null
         }
-    }, [running, results, state])
+    }, [running, state])
 
     const handleTimer = () => {
         if (running) {
@@ -91,13 +98,33 @@ export const ColorWords = () => {
                     </tbody>
                 </Table>
             </Row>
-            {results.map((value) => {
-                return (
-                    <p>
-                    {value.processed} {value.faults}
-                    </p>
-                )
-            })}
+            <Row>
+                <Table bordered className="resultTable">
+                    <tbody>
+                        <tr>
+                            {results.map((v, idx) => {
+                                return (
+                                    <th>{idx+1}. perc</th>
+                                )
+                            })}
+                        </tr>
+                        <tr>
+                            {results.map((result) => {
+                                return (
+                                    <td>{result.processed}</td>
+                                )
+                            })}
+                        </tr>
+                        <tr>
+                            {results.map((result) => {
+                                return (
+                                    <td>{result.faults}</td>
+                                )
+                            })}
+                        </tr>
+                    </tbody>
+                </Table>
+            </Row>
         </Container>
     )
 }
