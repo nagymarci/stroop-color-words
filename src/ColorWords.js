@@ -1,17 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button, Container, Row, Table } from 'react-bootstrap';
 import words from './words.json';
 
-export const ColorWords = () => {
-    const [state, setState] = useState(words.map((row) => {
+function getWords() {
+    return words.map((row) => {
         return row.map((word) => {
             return {
                 word: word
             }
         })
-    }))
+    })
+}
+
+export const ColorWords = () => {
+    const [state, setState] = useState(getWords())
     const [running, setRunning] = useState(false)
-    const [intervalId, setIntervalId] = useState(null)
+    const intervalId = useRef(null)
+    const [results, setResults] = useState([])
 
     const handleClick = (row, col) => {
         console.log("clicked", row, col)
@@ -27,21 +32,40 @@ export const ColorWords = () => {
     }
 
     useEffect(() => {
-        if (running && !intervalId) {
-            setIntervalId(setInterval(()=> {
-                console.log("hallo")
-            }, 5000))
+        if (running && !intervalId.current) {
+            intervalId.current = setInterval(()=> {
+                console.log("results", results)
+                let clicked = 0
+                let red = 0
+                let tmp = [...state]
+                tmp.forEach((row) => {
+                    row.forEach((wordState) => {
+                        if (wordState.color) {
+                            clicked++
+                        }
+                        if (wordState.color === "red") {
+                            red++
+                        }
+                    })
+                })
+                let newResults = [...results]
+                newResults.push({processed: clicked, faults: red})
+                setResults(newResults)
+            }, 5000)
         }
-        if (!running && intervalId) {
-            clearInterval(intervalId)
-            setIntervalId(null)
+        if (!running && intervalId.current) {
+            clearInterval(intervalId.current)
+            intervalId.current = null
         }
-    }, [running, intervalId])
+    }, [running, results, state])
 
     const handleTimer = () => {
+        if (running) {
+            setState(getWords())
+            setResults([])
+        }
         setRunning(!running)
     }
-
     console.log("-----")
     console.log(state)
     return (
@@ -67,6 +91,13 @@ export const ColorWords = () => {
                     </tbody>
                 </Table>
             </Row>
+            {results.map((value) => {
+                return (
+                    <p>
+                    {value.processed} {value.faults}
+                    </p>
+                )
+            })}
         </Container>
     )
 }
