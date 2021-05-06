@@ -70,7 +70,7 @@ export const ColorWords = () => {
                     newResults.push({processed: 0, faults: 0})
                     return newResults
                 })
-            }, 5000)
+            }, 60000)
         }
         if (!running && intervalId.current) {
             console.log("clear interval runnig")
@@ -90,7 +90,7 @@ export const ColorWords = () => {
     console.log(state)
     return (
         <Container className="colorWords">
-            <Button onClick={handleTimer}>{running ? "Stop" : "Start new"}</Button>
+            <Button onClick={handleTimer}>{running ? "Leállitas" : "Indítás"}</Button>
             <Row className="mt-5">
                 <Table bordered>
                     <tbody>
