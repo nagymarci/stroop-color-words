@@ -16,7 +16,9 @@ export const ColorWords = () => {
     const [state, setState] = useState(getWords())
     const [running, setRunning] = useState(false)
     const intervalId = useRef(null)
+    const timerId = useRef(null)
     const [results, setResults] = useState([{processed: 0, faults: 0}])
+    const [timer, setTimer] = useState({start: 0, time: 0})
 
     const handleClick = (row, col) => {
         console.log("clicked", row, col)
@@ -71,15 +73,28 @@ export const ColorWords = () => {
                     return newResults
                 })
             }, 30000)
+            setTimer({
+                    start: Date.now(),
+                    time: 0
+                })
+            timerId.current = setInterval(() => {
+                setTimer((old) => {
+                    let tmp = {...old}
+                    tmp.time = Date.now() - old.start
+                    return tmp
+                })
+            }, 10)
         }
         if (!running && intervalId.current) {
             console.log("clear interval runnig")
             clearInterval(intervalId.current)
+            clearInterval(timerId.current)
             intervalId.current = null
+            timerId.current = null
         }
     }, [running, state])
 
-    const handleTimer = () => {
+    const handleStart = () => {
         if (!running) {
             setState(getWords())
             setResults([{processed: 0, faults: 0}])
@@ -90,7 +105,7 @@ export const ColorWords = () => {
     console.log(state)
     return (
         <Container className="colorWords">
-            <Button onClick={handleTimer}>{running ? "Leállitas" : "Indítás"}</Button>
+            <Button onClick={handleStart}>{running ? "Leállitas" : "Indítás"}</Button>
             <Row className="mt-5">
                 <Table bordered>
                     <tbody>
@@ -113,6 +128,9 @@ export const ColorWords = () => {
             </Row>
             {!running &&
             <Row>
+                <h2 className="mt-5">
+                {("0" + (Math.floor(timer.time / 60000) % 60)).slice(-2)}:{("0" + (Math.floor(timer.time / 1000) % 60)).slice(-2)}
+                </h2>
                 <Table bordered className="resultTable">
                     <tbody>
                         <tr>
