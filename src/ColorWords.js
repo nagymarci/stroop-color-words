@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Container, Row, Table } from 'react-bootstrap';
+import { Button, Col, Container, Row, Table } from 'react-bootstrap';
 import words from './words.json';
 
 function getWords() {
@@ -105,8 +105,14 @@ export const ColorWords = () => {
     console.log(state)
     return (
         <Container className="colorWords">
+            <Row className="mt-2">
+                <Col>
             <Button onClick={handleStart}>{running ? "Leállitas" : "Indítás"}</Button>
-            <Row className="mt-5">
+            </Col>
+            <Col>
+                {("0" + (Math.floor(timer.time / 60000) % 60)).slice(-2)}:{("0" + (Math.floor(timer.time / 1000) % 60)).slice(-2)}
+                </Col></Row>
+            <Row className="mt-3">
                 <Table bordered>
                     <tbody>
                         {state.map((row, idx) => {
@@ -129,14 +135,14 @@ export const ColorWords = () => {
             {!running &&
             <Row>
                 <h2 className="mt-5">
-                {("0" + (Math.floor(timer.time / 60000) % 60)).slice(-2)}:{("0" + (Math.floor(timer.time / 1000) % 60)).slice(-2)}
+                Össz idő: {("0" + (Math.floor(timer.time / 60000) % 60)).slice(-2)}:{("0" + (Math.floor(timer.time / 1000) % 60)).slice(-2)}
                 </h2>
                 <Table bordered className="resultTable">
                     <tbody>
                         <tr>
                             {results.map((v, idx) => {
                                 return (
-                                    <th>{idx+1}. perc</th>
+                                    <th>{idx+1}. félperc</th>
                                 )
                             })}
                         </tr>
