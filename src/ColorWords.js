@@ -70,7 +70,7 @@ export const ColorWords = () => {
                     newResults.push({processed: 0, faults: 0})
                     return newResults
                 })
-            }, 60000)
+            }, 30000)
         }
         if (!running && intervalId.current) {
             console.log("clear interval runnig")
