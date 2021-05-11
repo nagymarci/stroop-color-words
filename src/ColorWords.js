@@ -160,6 +160,11 @@ export const ColorWords = () => {
             
         }
         window.addEventListener("keyup", onKeyUp)
+        window.addEventListener("keypress", (e) => {
+            if (e.code === "Enter") {
+                e.preventDefault()
+            }
+        })
         return () => window.removeEventListener("keyup", onKeyUp)
     }, [])
 
