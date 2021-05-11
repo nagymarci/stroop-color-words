@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Col, Container, Row, Table } from 'react-bootstrap';
 import words from './words.json';
 
@@ -19,39 +19,11 @@ export const ColorWords = () => {
     const timerId = useRef(null)
     const [results, setResults] = useState([{processed: 0, faults: 0}])
     const [timer, setTimer] = useState({start: 0, time: 0})
+    const [selection, setSelection] = useState({row: 0, col: 0})
 
-    const handleClick = (row, col) => {
-        console.log("clicked", row, col)
-        let tmp = [...state]
-        console.log(tmp)
-        console.log(tmp[row][col])
-        if (!tmp[row][col].color) {
-            setResults((results) => {
-                let newResults = [...results]
-                newResults[newResults.length-1].processed++
-                return newResults
-            })
-            tmp[row][col].color = "green"
-        } else if (tmp[row][col].color === "red") {
-            setResults((results) => {
-                let newResults = [...results]
-                newResults[newResults.length-1].faults--
-                return newResults
-            })
-            tmp[row][col].color = "green"
-        } else {
-            setResults((results) => {
-                let newResults = [...results]
-                newResults[newResults.length-1].faults++
-                return newResults
-            })
-            tmp[row][col].color = "red"
-        }
-        setState(tmp)
-        checkFinish()
-    }
 
-    const checkFinish = () => {
+
+    const checkFinish = useCallback(() => {
         for (let row = 0; row < state.length; row++) {
             for (let col = 0; col < state[row].length; col++) {
                 if (!state[row][col].color) {
@@ -62,7 +34,85 @@ export const ColorWords = () => {
             
         }
         setRunning(false)
-    }
+    }, [setRunning, state])
+
+    const handleClick = useCallback((row, col) => {
+        console.log("clicked", row, col)
+        setState((old) => {
+            let tmp = []
+            old.forEach((wordRow, idx) => {
+                tmp.push([])
+                wordRow.forEach(word => {
+                    tmp[idx].push({...word})
+                });
+            });
+            console.log("oldstate", tmp)
+            console.log("oldstate at position", tmp[row][col])
+            if (!tmp[row][col].color) {
+                setResults((results) => {
+                    let newResults = [...results]
+                    newResults[newResults.length-1].processed++
+                    return newResults
+                })
+                console.log("assign green")
+                tmp[row][col].color = "green"
+            } else if (tmp[row][col].color === "red") {
+                setResults((results) => {
+                    let newResults = [...results]
+                    newResults[newResults.length-1].faults--
+                    return newResults
+                })
+                console.log("assign green")
+                tmp[row][col].color = "green"
+            } else {
+                setResults((results) => {
+                    let newResults = [...results]
+                    newResults[newResults.length-1].faults++
+                    return newResults
+                })
+                console.log("assign red")
+                tmp[row][col].color = "red"
+            }
+            return tmp
+        })
+    },[setResults, setState])
+
+   useEffect(() => {
+       console.log("selectionChanged effect")
+        if (selection.col === 0 && selection.row !== 0) {
+            handleClick(selection.row - 1, 4)
+        }
+        if (selection.col !==0) {
+            handleClick(selection.row, selection.col - 1)
+        }
+    }, [selection, handleClick])
+
+    useEffect(() => {
+        function onKeyUp(e){
+            if (e.code === "ArrowRight") {
+                console.log(e.code)
+                setSelection((old) => {
+                    console.log("selectionChanged")
+                    let newSelection = {...old}
+                    if (old.col === 4) {
+                        newSelection.col = 0
+                        newSelection.row = old.row + 1
+                    } else {
+                        newSelection.col = old.col + 1
+                        newSelection.row = old.row
+                    }
+                    return newSelection
+                })
+                e.preventDefault()
+            }
+            else {
+                alert(e.code)
+            }
+            
+        }
+        window.addEventListener("keyup", onKeyUp)
+        return () => window.removeEventListener("keyup", onKeyUp)
+    }, [handleClick])
 
     useEffect(() => {
         if (running && !intervalId.current) {
@@ -101,8 +151,8 @@ export const ColorWords = () => {
         }
         setRunning(!running)
     }
-    console.log("-----")
-    console.log(state)
+    //console.log("-----")
+    //console.log(state)
     return (
         <Container className="colorWords">
             <Row className="mt-2">
@@ -120,9 +170,9 @@ export const ColorWords = () => {
                                 <tr>
                                     <td>{idx + 1}</td>
                                     {row.map((wordState, wdx) => {
-                                        console.log("wordState", wordState)
+                                        //console.log("wordState", wordState)
                                         return (
-                                            <Word word={wordState.word} color={wordState.color} onClick={() => handleClick(idx, wdx)}/>
+                                            <Word word={wordState.word} selected={selection.row === idx && selection.col === wdx} color={wordState.color} onClick={() => handleClick(idx, wdx)}/>
                                         )
                                     })}
                                 </tr>
@@ -170,11 +220,12 @@ export const ColorWords = () => {
 
 class Word extends React.Component {
     constructor(props) {
-        console.log("props", props)
+        //console.log("props", props)
         super(props)
         this.state={
             word: props.word,
-            color: props.color
+            color: props.color,
+            selected: props.selected
         }
     }
 
@@ -182,17 +233,18 @@ class Word extends React.Component {
         if (prevProps !== this.props) {
             this.setState({
                 word: this.props.word,
-                color: this.props.color
+                color: this.props.color,
+                selected: this.props.selected
             })
         }
     }
 
     render() {
-        console.log("state", this.state)
+        //console.log("state", this.state)
         let color = !this.state.color ? "white" : this.state.color
-        console.log(color)
+        //console.log(color)
         return (
-            <td bgcolor={color} onClick={this.props.onClick}>{this.state.word}</td>
+            <td className={this.state.selected ? "selected" : "default"} bgcolor={color} onClick={this.props.onClick}>{this.state.word}</td>
         )
     }
 }
