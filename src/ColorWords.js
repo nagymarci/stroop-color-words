@@ -13,20 +13,19 @@ function getWords() {
 }
 
 export const ColorWords = () => {
-    const [state, setState] = useState(getWords())
+    const [state, setState] = useState({words: getWords(), results: [{processed: 0, faults: 0}]})
     const [running, setRunning] = useState(false)
     const intervalId = useRef(null)
     const timerId = useRef(null)
-    const [results, setResults] = useState([{processed: 0, faults: 0}])
     const [timer, setTimer] = useState({start: 0, time: 0})
     const [selection, setSelection] = useState({row: 0, col: 0})
 
 
 
-    const checkFinish = useCallback(() => {
-        for (let row = 0; row < state.length; row++) {
-            for (let col = 0; col < state[row].length; col++) {
-                if (!state[row][col].color) {
+    useEffect(() => {
+        for (let row = 0; row < state.words.length; row++) {
+            for (let col = 0; col < state.words[row].length; col++) {
+                if (!state.words[row][col].color) {
                     return
                 }
                 
@@ -34,48 +33,40 @@ export const ColorWords = () => {
             
         }
         setRunning(false)
-    }, [setRunning, state])
+    }, [setRunning, state.words])
 
     const handleClick = useCallback((row, col) => {
         console.log("clicked", row, col)
         setState((old) => {
             let tmp = []
-            old.forEach((wordRow, idx) => {
+            old.words.forEach((wordRow, idx) => {
                 tmp.push([])
                 wordRow.forEach(word => {
                     tmp[idx].push({...word})
                 });
             });
+            let newResults = []
+            old.results.forEach(result => {
+                newResults.push({...result})
+            })
             console.log("oldstate", tmp)
             console.log("oldstate at position", tmp[row][col])
             if (!tmp[row][col].color) {
-                setResults((results) => {
-                    let newResults = [...results]
-                    newResults[newResults.length-1].processed++
-                    return newResults
-                })
-                console.log("assign green")
+                newResults[newResults.length-1].processed++
+                console.log("assign green processed")
                 tmp[row][col].color = "green"
             } else if (tmp[row][col].color === "red") {
-                setResults((results) => {
-                    let newResults = [...results]
-                    newResults[newResults.length-1].faults--
-                    return newResults
-                })
+                newResults[newResults.length-1].faults--
                 console.log("assign green")
                 tmp[row][col].color = "green"
             } else {
-                setResults((results) => {
-                    let newResults = [...results]
-                    newResults[newResults.length-1].faults++
-                    return newResults
-                })
+                newResults[newResults.length-1].faults++
                 console.log("assign red")
                 tmp[row][col].color = "red"
             }
-            return tmp
+            return {words: tmp, results: newResults}
         })
-    },[setResults, setState])
+    },[setState])
 
    useEffect(() => {
        console.log("selectionChanged effect")
@@ -117,10 +108,10 @@ export const ColorWords = () => {
     useEffect(() => {
         if (running && !intervalId.current) {
             intervalId.current = setInterval(()=> {
-                setResults((results) => {
-                    let newResults = [...results]
+                setState((old) => {
+                    let newResults = [...old.results]
                     newResults.push({processed: 0, faults: 0})
-                    return newResults
+                    return {...old, results: newResults}
                 })
             }, 30000)
             setTimer({
@@ -142,12 +133,11 @@ export const ColorWords = () => {
             intervalId.current = null
             timerId.current = null
         }
-    }, [running, state])
+    }, [running])
 
     const handleStart = () => {
         if (!running) {
-            setState(getWords())
-            setResults([{processed: 0, faults: 0}])
+            setState({words: getWords(), results: [{processed: 0, faults: 0}]})
         }
         setRunning(!running)
     }
@@ -165,7 +155,7 @@ export const ColorWords = () => {
             <Row className="mt-3">
                 <Table bordered>
                     <tbody>
-                        {state.map((row, idx) => {
+                        {state.words.map((row, idx) => {
                             return (
                                 <tr>
                                     <td>{idx + 1}</td>
@@ -190,21 +180,21 @@ export const ColorWords = () => {
                 <Table bordered className="resultTable">
                     <tbody>
                         <tr>
-                            {results.map((v, idx) => {
+                            {state.results.map((v, idx) => {
                                 return (
                                     <th>{idx+1}. félperc</th>
                                 )
                             })}
                         </tr>
                         <tr>
-                            {results.map((result) => {
+                            {state.results.map((result) => {
                                 return (
                                     <td>{result.processed}</td>
                                 )
                             })}
                         </tr>
                         <tr>
-                            {results.map((result) => {
+                            {state.results.map((result) => {
                                 return (
                                     <td>{result.faults}</td>
                                 )
