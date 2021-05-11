@@ -18,7 +18,7 @@ export const ColorWords = () => {
     const intervalId = useRef(null)
     const timerId = useRef(null)
     const [timer, setTimer] = useState({start: 0, time: 0})
-    const [selection, setSelection] = useState({row: 0, col: 0})
+    const [selection, setSelection] = useState({row: 0, col: 0, key: ""})
 
 
 
@@ -68,23 +68,54 @@ export const ColorWords = () => {
         })
     },[setState])
 
+    const handleSelectionChange = useCallback((row, col, key) => {
+        console.log("clicked", row, col, key)
+        setState((old) => {
+            let tmp = []
+            old.words.forEach((wordRow, idx) => {
+                tmp.push([])
+                wordRow.forEach(word => {
+                    tmp[idx].push({...word})
+                });
+            });
+            let newResults = []
+            old.results.forEach(result => {
+                newResults.push({...result})
+            })
+            console.log("oldstate", tmp)
+            console.log("oldstate at position", tmp[row][col])
+            if (!tmp[row][col].color && key === "ArrowRight") {
+                newResults[newResults.length-1].processed++
+                console.log("assign green processed")
+                tmp[row][col].color = "green"
+            } else if (!tmp[row][col].color && key === "Enter"){
+                newResults[newResults.length-1].faults++
+                newResults[newResults.length-1].processed++
+                console.log("assign red")
+                tmp[row][col].color = "red"
+            }
+            return {words: tmp, results: newResults}
+        })
+    },[setState])
+
    useEffect(() => {
        console.log("selectionChanged effect")
         if (selection.col === 0 && selection.row !== 0) {
-            handleClick(selection.row - 1, 4)
+            handleSelectionChange(selection.row - 1, 4, selection.key)
         }
         if (selection.col !==0) {
-            handleClick(selection.row, selection.col - 1)
+            handleSelectionChange(selection.row, selection.col - 1, selection.key)
         }
-    }, [selection, handleClick])
+    }, [selection, handleSelectionChange])
 
     useEffect(() => {
         function onKeyUp(e){
-            if (e.code === "ArrowRight") {
+            if (e.code === "ArrowRight" || e.code === "Enter") {
                 console.log(e.code)
                 setSelection((old) => {
                     console.log("selectionChanged")
                     let newSelection = {...old}
+                    newSelection.key = e.code
                     if (old.col === 4) {
                         newSelection.col = 0
                         newSelection.row = old.row + 1
@@ -103,7 +134,7 @@ export const ColorWords = () => {
         }
         window.addEventListener("keyup", onKeyUp)
         return () => window.removeEventListener("keyup", onKeyUp)
-    }, [handleClick])
+    }, [])
 
     useEffect(() => {
         if (running && !intervalId.current) {
