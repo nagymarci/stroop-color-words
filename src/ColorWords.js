@@ -88,11 +88,21 @@ export const ColorWords = () => {
                 newResults[newResults.length-1].processed++
                 console.log("assign green processed")
                 tmp[row][col].color = "green"
-            } else if (!tmp[row][col].color && key === "Enter"){
-                newResults[newResults.length-1].faults++
-                newResults[newResults.length-1].processed++
-                console.log("assign red")
-                tmp[row][col].color = "red"
+            } else if (key === "Enter"){
+                if (!tmp[row][col].color) {
+                    newResults[newResults.length-1].faults++
+                    newResults[newResults.length-1].processed++
+                    console.log("assign red")
+                    tmp[row][col].color = "red"
+                } else if (tmp[row][col].color === "red") {
+                    newResults[newResults.length-1].faults--
+                    console.log("assign green")
+                    tmp[row][col].color = "green"
+                } else {
+                    newResults[newResults.length-1].faults++
+                    console.log("assign red")
+                    tmp[row][col].color = "red"
+                }
             }
             return {words: tmp, results: newResults}
         })
@@ -121,6 +131,23 @@ export const ColorWords = () => {
                         newSelection.row = old.row + 1
                     } else {
                         newSelection.col = old.col + 1
+                        newSelection.row = old.row
+                    }
+                    return newSelection
+                })
+                e.preventDefault()
+            }
+            else if (e.code === "ArrowLeft") {
+                console.log(e.code)
+                setSelection((old) => {
+                    console.log("selectionChanged")
+                    let newSelection = {...old}
+                    newSelection.key = e.code
+                    if (old.col === 0) {
+                        newSelection.col = 4
+                        newSelection.row = old.row - 1
+                    } else {
+                        newSelection.col = old.col - 1
                         newSelection.row = old.row
                     }
                     return newSelection
