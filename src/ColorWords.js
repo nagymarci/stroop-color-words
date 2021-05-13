@@ -126,6 +126,9 @@ export const ColorWords = () => {
                     console.log("selectionChanged")
                     let newSelection = {...old}
                     newSelection.key = e.code
+                    if (old.row === words.length) {
+                        return old
+                    }
                     if (old.col === 4) {
                         newSelection.col = 0
                         newSelection.row = old.row + 1
@@ -143,6 +146,9 @@ export const ColorWords = () => {
                     console.log("selectionChanged")
                     let newSelection = {...old}
                     newSelection.key = e.code
+                    if (old.col === 0 && old.row === 0) {
+                        return old
+                    }
                     if (old.col === 0) {
                         newSelection.col = 4
                         newSelection.row = old.row - 1
