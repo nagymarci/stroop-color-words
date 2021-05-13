@@ -182,7 +182,7 @@ export const ColorWords = () => {
                     newResults.push({processed: 0, faults: 0})
                     return {...old, results: newResults}
                 })
-            }, 30000)
+            }, 20000)
             setTimer({
                     start: Date.now(),
                     time: 0
@@ -252,7 +252,7 @@ export const ColorWords = () => {
                         <tr>
                             {state.results.map((v, idx) => {
                                 return (
-                                    <th>{idx+1}. félperc</th>
+                                    <th>{idx+1}. 20mp</th>
                                 )
                             })}
                         </tr>
