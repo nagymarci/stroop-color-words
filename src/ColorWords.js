@@ -201,6 +201,7 @@ export const ColorWords = () => {
     const handleStart = () => {
         if (!running) {
             setState({words: getWords(), results: [{processed: 0, faults: 0}]})
+            setSelection({row: 0, col: 0, key: ""})
         }
         setRunning(!running)
     }
